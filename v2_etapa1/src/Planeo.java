@@ -1,18 +1,20 @@
 import java.util.Scanner;
 public class Planeo {
-    // Variables globales
+    // Variables globales para almacenar información del curso.
     static String codigoCurso;
     static String nombreCurso;
     static int creditosCurso;
     static String profesorCurso;
     static String salonCurso;
-    static boolean cursoRegistrado = false;
+    static boolean cursoRegistrado = false; // La utilizare para validar si el curso ya fue registrado.
     static final Scanner lector = new Scanner(System.in);
+
+    // Arreglos para almacenar datos de hasta 5 actividades, entre corchetes se indica el maximo de actividades.
     static String[] nombresActividades = new String[5];
     static String[] fechasActividades = new String[5];
     static int[] porcentajesActividades = new int[5];
     static double[] notasActividades = new double[5];
-    static int actividadesRegistradas = 0;
+    static int actividadesRegistradas = 0; //Numero de actividades registradas, inicia en 0 para validar las siguientes opciones del menu.
 
     // Metodo para registrar curso
     public static boolean registrarCurso() {
@@ -36,11 +38,13 @@ public static void asociarActividades() {
     System.out.print("¿Cuántas actividades? (1-5): ");
     int numeroActividades = lector.nextInt();
     lector.nextLine();
-    if (numeroActividades < 1 && numeroActividades > 5) {
-        System.out.println("Debe ser entre 1 y 5.");
+
+    if (numeroActividades < 1 || numeroActividades > 5) {  //Validacion de entradas en el rango
+        System.out.println("Dejbe ser entre 1 y 5.");
         return;
     }
-    int total = 0;
+
+    int total = 0; //Validacion de entradas de porcentajes sea 100%
     actividadesRegistradas = numeroActividades;
     for (int i = 0; i < numeroActividades; i++) {
         System.out.print("Nombre actvidad " + (i + 1) + ": ");
@@ -52,11 +56,10 @@ public static void asociarActividades() {
         lector.nextLine();
         total += porcentajesActividades[i];
         System.out.println("Registrada '" + nombresActividades[i] + "' (" + fechasActividades[i] + ") " + porcentajesActividades[i] + "%.");
-        notasActividades[i] = -1;
     }
     if (total != 100) {
         System.out.println("Error total: " + total + "%. Debe ser 100%.");
-        actividadesRegistradas = 0;
+        actividadesRegistradas = 0; //Reinicia las actividades en caso de error
     } else {
         System.out.println("Actividades registradas.");
     }
@@ -65,12 +68,13 @@ public static void asociarActividades() {
 // Metodo para cargar notas de actividades
 public static void cargarNotas() {
     for (int i = 0; i < actividadesRegistradas; i++) {
+        notasActividades[i] = -1; //Se inicia la nota en -1, mientras no se ingrese una nota
         System.out.print("Ingrese la nota para '" + nombresActividades[i] + "' (" + fechasActividades[i] + "): ");
         double nota = lector.nextDouble();
         lector.nextLine();
-        if (nota < 0 || nota > 5) {
+        if (nota < 0 || nota > 5) { //Validacion de entradas de notas
             System.out.println("Nota inválida. Debe estar entre 0 y 5.");
-            i--;
+            i--; // Se resta para repetir la entrada de nota
         } else {
             notasActividades[i] = nota;
         }
@@ -78,6 +82,16 @@ public static void cargarNotas() {
     System.out.println("Notas cargadas.");
 }
 
+// Metodo para visualizar actividades del curso
+public static void visualizarActividades() {
+
+    System.out.println("Actividades del curso '" + nombreCurso + "':");
+    for (int i = 0; i < actividadesRegistradas; i++) {
+        System.out.println((i + 1) + ". " + nombresActividades[i] +
+            "Fecha: " + fechasActividades[i] +
+            "Porcentaje: " + porcentajesActividades[i] + "%");
+    }
+    }
 
     // Menu principal
     public static void main(String[] args) {
@@ -93,22 +107,25 @@ public static void cargarNotas() {
             System.out.print("Seleccione una opción: ");
             opcion = lector.nextInt();
             lector.nextLine(); 
-            if (opcion == 1 && !cursoRegistrado) {
-                // Registrar curso si aún no ha sido registrado
+            if (opcion == 1 && !cursoRegistrado) {// Registrara UN curso si aún no hay alguno registrado
                 cursoRegistrado = registrarCurso();
-            }else if (opcion == 1 && cursoRegistrado) {
-               // Mensaje si el curso ya fue registrado
+            }else if (opcion == 1 && cursoRegistrado) { // Mensaje si el curso ya fue registrado
                 System.out.println("El curso ya ha sido registrado."); 
-            }else if (opcion == 2 && cursoRegistrado) {
+            }else if (opcion == 2 && cursoRegistrado) { //Permite asociar actividades al curso si ya fue registrado
                 asociarActividades();
-            } else if (opcion == 2 && !cursoRegistrado) {
+            } else if (opcion == 2 && !cursoRegistrado) {// Mensaje si no hay curso registrado
                 System.out.println("No hay ningun curso registrado.");
             } else if (opcion == 3) {
-                if (actividadesRegistradas > 0) {
+                if (actividadesRegistradas > 0) { // Permite cargar notas si hay actividades registradas
                     cargarNotas();
-                } else {
-                    System.out.println("No hay actividades registradas.");}
+                } else { 
+                    System.out.println("No hay actividades registradas.");} // Mensaje si no hay actividades registradas
             } else if (opcion == 4) {
+                if (actividadesRegistradas > 0){ // Permite visualizar actividades si hay actividades registradas
+                    visualizarActividades();
+                } else {
+                    System.out.println("No hay actividades registradas."); // Mensaje si no hay actividades registradas
+                }
             } else if (opcion == 5) {
             } else if (opcion == 6) {
                 // Salida del menu
